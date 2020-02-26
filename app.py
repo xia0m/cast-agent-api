@@ -1,11 +1,11 @@
 import os
-from flask import Flask, request, abort, jsonify
+from flask import Flask, request, abort, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_migrate import Migrate
 
 
-from models import setup_db, db
+from models import setup_db, db, Movie, Actor
 
 
 def create_app(test_config=None):
@@ -14,8 +14,21 @@ def create_app(test_config=None):
 
     setup_db(app)
     migrate = Migrate(app, db)
-
     CORS(app)
+
+    @app.route('/movies', methods=['GET'])
+    def retrieve_movies():
+        movies = Movie.query.all()
+
+        if len(movies) == 0:
+            abort(404)
+
+        formated_movies = [movie.format() for movie in movies]
+
+        return jsonify({
+            'success': True,
+            'movies': formated_movies
+        })
 
     return app
 

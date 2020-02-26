@@ -30,6 +30,14 @@ class Movie(db.Model):
     release_date = db.Column(db.DateTime, nullable=False)
     actors = db.relationship('Actor', backref='movie')
 
+    def format(self):
+        return{
+            'id': self.id,
+            'title': self.title,
+            'release_date': self.release_date,
+            'actors': self.actors
+        }
+
 
 class Actor(db.Model):
     __tablename__ = 'actor'
