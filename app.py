@@ -30,6 +30,17 @@ def create_app(test_config=None):
             'movies': formated_movies
         })
 
+    @app.route('/movies/<id>', methods=['GET'])
+    def retrieve_movie_by_id(id):
+        movie = Movie.query.filter(Movie.id == id).one_or_none()
+        if movie is None:
+            abort(404)
+
+        return jsonify({
+            'success': True,
+            'movie': movie.detailed_info()
+        })
+
     @app.route('/actors', methods=['GET'])
     def retrieve_actors():
         actors = Actor.query.all()

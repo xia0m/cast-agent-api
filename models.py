@@ -37,11 +37,12 @@ class Movie(db.Model):
         }
 
     def detailed_info(self):
+        serialized_actors = [actor.format() for actor in self.actors]
         return{
             'id': self.id,
             'title': self.title,
             'release_date': self.release_date,
-            'actors': self.actors
+            'actors': serialized_actors
         }
 
 
