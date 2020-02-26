@@ -30,7 +30,13 @@ class Movie(db.Model):
     release_date = db.Column(db.DateTime, nullable=False)
     actors = db.relationship('Actor', backref='movie')
 
-    def format(self):
+    def general_info(self):
+        return{
+            'id': self.id,
+            'title': self.title,
+        }
+
+    def detailed_info(self):
         return{
             'id': self.id,
             'title': self.title,
@@ -47,3 +53,12 @@ class Actor(db.Model):
     age = db.Column(db.Integer, nullable=False)
     gender = db.Column(db.String(20), nullable=False)
     movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'), nullable=False)
+
+    def format(self):
+        return{
+            'id': self.id,
+            'name': self.name,
+            'age': self.age,
+            'gender': self.gender,
+            'movie_id': self.movie_id
+        }

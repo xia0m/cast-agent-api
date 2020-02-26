@@ -23,11 +23,25 @@ def create_app(test_config=None):
         if len(movies) == 0:
             abort(404)
 
-        formated_movies = [movie.format() for movie in movies]
+        formated_movies = [movie.general_info() for movie in movies]
 
         return jsonify({
             'success': True,
             'movies': formated_movies
+        })
+
+    @app.route('/actors', methods=['GET'])
+    def retrieve_actors():
+        actors = Actor.query.all()
+
+        if len(actors) == 0:
+            abort(404)
+
+        formated_actors = [actor.format() for actor in actors]
+
+        return jsonify({
+            'success': True,
+            'actors': formated_actors
         })
 
     return app
