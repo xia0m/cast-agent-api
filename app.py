@@ -55,6 +55,17 @@ def create_app(test_config=None):
             'actors': formated_actors
         })
 
+    @app.route('/actors/<id>', methods=['GET'])
+    def retrieve_actor_by_id(id):
+        actor = Actor.query.filter(Actor.id == id).one_or_none()
+        if actor is None:
+            abort(404)
+
+        return jsonify({
+            'success': True,
+            'actor': actor.format()
+        })
+
     return app
 
 
