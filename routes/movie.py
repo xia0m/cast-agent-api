@@ -1,5 +1,6 @@
-from models import Movie
+from models import Movie, db
 from flask import abort, jsonify, request
+from sqlalchemy.exc import IntegrityError
 
 
 def movie_routes(app):
@@ -27,3 +28,30 @@ def movie_routes(app):
             'success': True,
             'movie': movie.detailed_info()
         })
+
+    @app.route('/movies', methods=['POST'])
+    def create_movie():
+
+        body = request.get_json()
+        new_title = body.get('title', None)
+        new_date = body.get('release_date', None)
+
+        try:
+            movie = Movie(title=new_title, release_date=new_date)
+            db.session.add(movie)
+            db.session.commit()
+
+            movies = Movie.query.all()
+            formated_movies = [movie.general_info() for movie in movies]
+            return jsonify({
+                'success': True,
+                'total_movies': len(movies),
+                'movies': formated_movies
+            })
+        except IntegrityError:
+            db.session.rollback()
+            print('Duplicated title name')
+            abort(422)
+        except BaseException:
+            db.session.rollback()
+            abort(422)

@@ -2,7 +2,7 @@ from models import Actor
 from flask import abort, jsonify, request
 
 
-def movie_routes(app):
+def actor_routes(app):
 
     @app.route('/actors', methods=['GET'])
     def retrieve_actors():
