@@ -88,3 +88,25 @@ def movie_routes(app):
         except BaseException:
             db.session.rollback()
             abort(422)
+
+    @app.route('/movies/<id>', methods=['DELETE'])
+    def delete_movie(id):
+        # check wheter movie is in database, if not, return 404
+        movie = Movie.query.filter(Movie.id == id).one_or_none()
+        if movie is None:
+            abort(404)
+
+        try:
+            db.session.delete(movie)
+            db.session.commit()
+
+            movies = Movie.query.all()
+            formated_movies = [movie.general_info() for movie in movies]
+            return jsonify({
+                'success': True,
+                'deleted': id,
+                'movies': formated_movies
+            })
+        except BaseException:
+            db.session.rollback()
+            abort(422)

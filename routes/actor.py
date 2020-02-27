@@ -79,6 +79,7 @@ def actor_routes(app):
 
         body = request.get_json()
 
+        # update only what attribute body has
         for key, value in body.items():
             setattr(actor, key, value)
 
