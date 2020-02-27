@@ -67,15 +67,9 @@ def movie_routes(app):
             abort(404)
 
         body = request.get_json()
-        new_title = body.get('title')
-        # check wheter title needs to get updated
-        if new_title is not None and new_title != movie.title:
-            movie.title = new_title
 
-        # check wheter release date needs to get updated
-        new_release_date = body.get('release_date')
-        if new_release_date is not None and new_release_date != movie.release_date:
-            movie.release_date = new_release_date
+        for key, value in body.items():
+            setattr(movie, key, value)
 
         try:
             db.session.commit()
