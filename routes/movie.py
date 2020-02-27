@@ -55,3 +55,42 @@ def movie_routes(app):
         except BaseException:
             db.session.rollback()
             abort(422)
+
+    """
+    Update a movie entry by movie id
+    """
+    @app.route('/movies/<id>', methods=['PATCH'])
+    def update_movie(id):
+        # check wheter movie is in database, if not, return 404
+        movie = Movie.query.filter(Movie.id == id).one_or_none()
+        if movie is None:
+            abort(404)
+
+        body = request.get_json()
+        new_title = body.get('title')
+        # check wheter title needs to get updated
+        if new_title is not None and new_title != movie.title:
+            movie.title = new_title
+
+        # check wheter release date needs to get updated
+        new_release_date = body.get('release_date')
+        if new_release_date is not None and new_release_date != movie.release_date:
+            movie.release_date = new_release_date
+
+        try:
+            db.session.commit()
+
+            movies = Movie.query.all()
+            formated_movies = [movie.general_info() for movie in movies]
+            return jsonify({
+                'success': True,
+                'updated_movie_id': id,
+                'movies': formated_movies
+            })
+        except IntegrityError:
+            db.session.rollback()
+            print('Duplicated title name')
+            abort(422)
+        except BaseException:
+            db.session.rollback()
+            abort(422)

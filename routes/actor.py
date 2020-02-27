@@ -28,6 +28,9 @@ def actor_routes(app):
             'success': True,
             'actor': actor.format()
         })
+    """
+    Post a new actor
+    """
 
     @app.route('/actors', methods=['POST'])
     def create_actor():
@@ -63,3 +66,9 @@ def actor_routes(app):
         except BaseException:
             db.session.rollback()
             abort(422)
+    """
+    Update a actor entry based on id
+
+    """
+    # @app.route('/actors/<id>', methods=['PATCH'])
+    # def update_actor(id):
