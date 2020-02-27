@@ -70,5 +70,32 @@ def actor_routes(app):
     Update a actor entry based on id
 
     """
-    # @app.route('/actors/<id>', methods=['PATCH'])
-    # def update_actor(id):
+    @app.route('/actors/<id>', methods=['PATCH'])
+    def update_actor(id):
+        # check wheter movie is in database, if not, return 404
+        actor = Actor.query.filter(Actor.id == id).one_or_none()
+        if actor is None:
+            abort(404)
+
+        body = request.get_json()
+
+        for key, value in body.items():
+            setattr(actor, key, value)
+
+        try:
+            db.session.commit()
+
+            actors = Actor.query.all()
+            formated_actors = [actor.format() for actor in actors]
+            return jsonify({
+                'success': True,
+                'updated_actor_id': id,
+                'actors': formated_actors
+            })
+        except IntegrityError:
+            db.session.rollback()
+            print('Duplicated title name')
+            abort(422)
+        except BaseException:
+            db.session.rollback()
+            abort(422)
