@@ -100,3 +100,28 @@ def actor_routes(app):
         except BaseException:
             db.session.rollback()
             abort(422)
+
+    """
+    Delete actor based on id
+    """
+    @app.route('/actors/<id>', methods=['DELETE'])
+    def delete_actor(id):
+        # check wheter movie is in database, if not, return 404
+        actor = Actor.query.filter(Actor.id == id).one_or_none()
+        if actor is None:
+            abort(404)
+
+        try:
+            db.session.delete(actor)
+            db.session.commit()
+
+            actors = Actor.query.all()
+            formated_actors = [actor.format() for actor in actors]
+            return jsonify({
+                'success': True,
+                'deleted': id,
+                'actors': formated_actors
+            })
+        except BaseException:
+            db.session.rollback()
+            abort(422)

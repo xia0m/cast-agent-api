@@ -89,6 +89,9 @@ def movie_routes(app):
             db.session.rollback()
             abort(422)
 
+    """
+    Detele movie based on id
+    """
     @app.route('/movies/<id>', methods=['DELETE'])
     def delete_movie(id):
         # check wheter movie is in database, if not, return 404
