@@ -1,4 +1,4 @@
-from models import Actor
+from models import Actor, Movie, db
 from flask import abort, jsonify, request
 
 
@@ -28,3 +28,38 @@ def actor_routes(app):
             'success': True,
             'actor': actor.format()
         })
+
+    @app.route('/actors', methods=['POST'])
+    def create_actor():
+        body = request.get_json()
+        new_name = body.get('name', None)
+        new_age = body.get('age', 0)
+        new_gender = body.get('gender', None)
+        new_movie_id = body.get('movie_id', 0)
+
+        try:
+            # check whether the movie exist
+            movie = Movie.query.filter(Movie.id == new_movie_id).one_or_none()
+            if movie is None:
+                print('No movie found with given movie id')
+                abort(400)
+
+            actor = Actor(name=new_name, age=new_age,
+                          gender=new_gender, movie_id=new_movie_id)
+            db.session.add(actor)
+            db.session.commit()
+
+            actors = Actor.query.all()
+            formated_actors = [actor.format() for actor in actors]
+            return jsonify({
+                'success': True,
+                'total_actors': len(actors),
+                'actors': formated_actors
+            })
+        except IntegrityError:
+            db.session.rollback()
+            print('Duplicated actor name')
+            abort(422)
+        except BaseException:
+            db.session.rollback()
+            abort(422)
