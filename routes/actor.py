@@ -1,11 +1,14 @@
 from models import Actor, Movie, db
 from flask import abort, jsonify, request
 
+from auth import AuthError, requires_auth
+
 
 def actor_routes(app):
 
     @app.route('/actors', methods=['GET'])
-    def retrieve_actors():
+    @requires_auth('get:actors')
+    def retrieve_actors(payload):
         actors = Actor.query.all()
 
         if len(actors) == 0:
@@ -19,7 +22,8 @@ def actor_routes(app):
         })
 
     @app.route('/actors/<id>', methods=['GET'])
-    def retrieve_actor_by_id(id):
+    @requires_auth('get:actors')
+    def retrieve_actor_by_id(payload, id):
         actor = Actor.query.filter(Actor.id == id).one_or_none()
         if actor is None:
             abort(404)
