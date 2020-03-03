@@ -1,6 +1,6 @@
 from models import Actor, Movie, db
 from flask import abort, jsonify, request
-
+from sqlalchemy.exc import IntegrityError
 from auth import AuthError, requires_auth
 
 
