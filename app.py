@@ -5,9 +5,8 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 
 
-from models import setup_db, db, Movie, Actor
-from routes.movie import movie_routes
-from routes.actor import actor_routes
+from models import setup_db, db
+from routes import setup_routes
 
 
 def create_app(test_config=None):
@@ -18,8 +17,7 @@ def create_app(test_config=None):
     migrate = Migrate(app, db)
     CORS(app)
 
-    movie_routes(app)
-    actor_routes(app)
+    setup_routes(app)
 
     return app
 
