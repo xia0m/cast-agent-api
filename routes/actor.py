@@ -37,7 +37,8 @@ def actor_routes(app):
     """
 
     @app.route('/actors', methods=['POST'])
-    def create_actor():
+    @requires_auth('add:actor')
+    def create_actor(payload):
         body = request.get_json()
         new_name = body.get('name', None)
         new_age = body.get('age', 0)
@@ -74,8 +75,10 @@ def actor_routes(app):
     Update a actor entry based on id
 
     """
+
     @app.route('/actors/<id>', methods=['PATCH'])
-    def update_actor(id):
+    @requires_auth('modify:actor')
+    def update_actor(payload, id):
         # check wheter movie is in database, if not, return 404
         actor = Actor.query.filter(Actor.id == id).one_or_none()
         if actor is None:
@@ -108,8 +111,10 @@ def actor_routes(app):
     """
     Delete actor based on id
     """
+
     @app.route('/actors/<id>', methods=['DELETE'])
-    def delete_actor(id):
+    @requires_auth('delete:actor')
+    def delete_actor(payload, id):
         # check wheter movie is in database, if not, return 404
         actor = Actor.query.filter(Actor.id == id).one_or_none()
         if actor is None:

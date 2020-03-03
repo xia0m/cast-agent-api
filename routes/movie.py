@@ -2,11 +2,14 @@ from models import Movie, db
 from flask import abort, jsonify, request
 from sqlalchemy.exc import IntegrityError
 
+from auth import AuthError, requires_auth
+
 
 def movie_routes(app):
 
     @app.route('/movies', methods=['GET'])
-    def retrieve_movies():
+    @requires_auth('get:movies')
+    def retrieve_movies(payload):
         movies = Movie.query.all()
         if len(movies) == 0:
             abort(404)
@@ -19,7 +22,8 @@ def movie_routes(app):
         })
 
     @app.route('/movies/<id>', methods=['GET'])
-    def retrieve_movie_by_id(id):
+    @requires_auth('get:movies')
+    def retrieve_movie_by_id(payload, id):
         movie = Movie.query.filter(Movie.id == id).one_or_none()
         if movie is None:
             abort(404)
@@ -30,7 +34,8 @@ def movie_routes(app):
         })
 
     @app.route('/movies', methods=['POST'])
-    def create_movie():
+    @requires_auth('add:movie')
+    def create_movie(payload):
 
         body = request.get_json()
         new_title = body.get('title', None)
@@ -60,7 +65,8 @@ def movie_routes(app):
     Update a movie entry by movie id
     """
     @app.route('/movies/<id>', methods=['PATCH'])
-    def update_movie(id):
+    @requires_auth('modify:movie')
+    def update_movie(payload, id):
         # check wheter movie is in database, if not, return 404
         movie = Movie.query.filter(Movie.id == id).one_or_none()
         if movie is None:
@@ -93,7 +99,8 @@ def movie_routes(app):
     Detele movie based on id
     """
     @app.route('/movies/<id>', methods=['DELETE'])
-    def delete_movie(id):
+    @requires_auth('delete:movie')
+    def delete_movie(payload, id):
         # check wheter movie is in database, if not, return 404
         movie = Movie.query.filter(Movie.id == id).one_or_none()
         if movie is None:
