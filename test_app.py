@@ -33,7 +33,7 @@ class CastTestCase(unittest.TestCase):
 
     def test_create_new_movie(self):
         movie_info = {
-            "title": "a",
+            "title": "aa",
             "release_date": "02/20/2020"
         }
         res = self.client().post(
@@ -57,7 +57,7 @@ class CastTestCase(unittest.TestCase):
 
     def test_create_new_actor(self):
         actor_info = {
-            "name": "n",
+            "name": "nn",
             "gender": "Female",
             "age": 36,
             "movie_id": 1
@@ -86,7 +86,7 @@ class CastTestCase(unittest.TestCase):
 
     def test_delete_one_movie(self):
         res = self.client().delete(
-            '/movies/22', headers={'Authorization': token.producer})
+            '/movies/23', headers={'Authorization': token.producer})
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
@@ -102,7 +102,7 @@ class CastTestCase(unittest.TestCase):
 
     def test_delete_one_actor(self):
         res = self.client().delete(
-            '/actors/12', headers={'Authorization': token.producer})
+            '/actors/13', headers={'Authorization': token.producer})
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
@@ -214,6 +214,24 @@ class CastTestCase(unittest.TestCase):
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
+
+    def test_unauth_add_actors(self):
+        actor_info = {
+            "name": "b",
+            "gender": "Female",
+            "age": 36,
+            "movie_id": 1
+
+        }
+        res = self.client().post(
+            '/actors', headers={'Authorization': token.assistant}, json=actor_info)
+        self.assertEqual(res.status_code, 401)
+
+    def test_unauth_delete_movie(self):
+
+        res = self.client().delete(
+            '/movies/17', headers={'Authorization': token.director})
+        self.assertEqual(res.status_code, 401)
 
 
 if __name__ == "__main__":
