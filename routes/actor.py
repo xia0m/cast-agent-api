@@ -54,8 +54,8 @@ def actor_routes(app):
 
             actor = Actor(name=new_name, age=new_age,
                           gender=new_gender, movie_id=new_movie_id)
-            db.session.add(actor)
-            db.session.commit()
+
+            actor.insert()
 
             actors = Actor.query.all()
             formated_actors = [actor.format() for actor in actors]
@@ -91,7 +91,7 @@ def actor_routes(app):
             setattr(actor, key, value)
 
         try:
-            db.session.commit()
+            actor.update()
 
             actors = Actor.query.all()
             formated_actors = [actor.format() for actor in actors]
@@ -121,8 +121,7 @@ def actor_routes(app):
             abort(404)
 
         try:
-            db.session.delete(actor)
-            db.session.commit()
+            actor.delete()
 
             actors = Actor.query.all()
             formated_actors = [actor.format() for actor in actors]

@@ -43,8 +43,7 @@ def movie_routes(app):
 
         try:
             movie = Movie(title=new_title, release_date=new_date)
-            db.session.add(movie)
-            db.session.commit()
+            movie.insert()
 
             movies = Movie.query.all()
             formated_movies = [movie.general_info() for movie in movies]
@@ -78,7 +77,7 @@ def movie_routes(app):
             setattr(movie, key, value)
 
         try:
-            db.session.commit()
+            movie.update()
 
             movies = Movie.query.all()
             formated_movies = [movie.general_info() for movie in movies]
@@ -107,8 +106,7 @@ def movie_routes(app):
             abort(404)
 
         try:
-            db.session.delete(movie)
-            db.session.commit()
+            movie.delete()
 
             movies = Movie.query.all()
             formated_movies = [movie.general_info() for movie in movies]

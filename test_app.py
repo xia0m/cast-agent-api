@@ -33,7 +33,7 @@ class CastTestCase(unittest.TestCase):
 
     def test_create_new_movie(self):
         movie_info = {
-            "title": "aa",
+            "title": "aaa",
             "release_date": "02/20/2020"
         }
         res = self.client().post(
@@ -57,7 +57,7 @@ class CastTestCase(unittest.TestCase):
 
     def test_create_new_actor(self):
         actor_info = {
-            "name": "nn",
+            "name": "nnn",
             "gender": "Female",
             "age": 36,
             "movie_id": 1
@@ -86,7 +86,7 @@ class CastTestCase(unittest.TestCase):
 
     def test_delete_one_movie(self):
         res = self.client().delete(
-            '/movies/23', headers={'Authorization': token.producer})
+            '/movies/24', headers={'Authorization': token.producer})
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
@@ -102,7 +102,7 @@ class CastTestCase(unittest.TestCase):
 
     def test_delete_one_actor(self):
         res = self.client().delete(
-            '/actors/13', headers={'Authorization': token.producer})
+            '/actors/14', headers={'Authorization': token.producer})
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)

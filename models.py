@@ -1,10 +1,10 @@
 from sqlalchemy import Column, String, create_engine
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+import os
 
-# database_path = os.environ['DATABASE_URL']
-database_name = "cast_test"
-database_path = "postgres://{}/{}".format('localhost:5432', database_name)
+database_path = os.environ['DATABASE_URL']
+
 
 db = SQLAlchemy()
 
@@ -30,6 +30,17 @@ class Movie(db.Model):
     release_date = db.Column(db.DateTime, nullable=False)
     actors = db.relationship('Actor', backref='movie')
 
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self):
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
     def general_info(self):
         return{
             'id': self.id,
@@ -54,6 +65,17 @@ class Actor(db.Model):
     age = db.Column(db.Integer, nullable=False)
     gender = db.Column(db.String(20), nullable=False)
     movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'), nullable=False)
+
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self):
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
     def format(self):
         return{
