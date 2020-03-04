@@ -165,12 +165,6 @@ class CastTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['movies'])
 
-    def test_unauth_get_all_movies(self):
-        res = self.client().get(
-            '/movies', headers={'Authorization': 'Bearer test'})
-
-        self.assertEqual(res.status_code, 401)
-
     def test_get_all_actors(self):
         res = self.client().get(
             '/actors', headers={'Authorization': token.assistant})
@@ -214,6 +208,12 @@ class CastTestCase(unittest.TestCase):
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
+
+    def test_unauth_get_all_movies(self):
+        res = self.client().get(
+            '/movies', headers={'Authorization': 'Bearer test'})
+
+        self.assertEqual(res.status_code, 401)
 
     def test_unauth_add_actors(self):
         actor_info = {

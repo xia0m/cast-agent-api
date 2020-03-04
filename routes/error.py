@@ -22,6 +22,22 @@ def error_routes(app):
             'message': 'resource not found'
         }), 404
 
+    @app.errorhandler(500)
+    def internal_server_error(error):
+        return jsonify({
+            'success': False,
+            'error': 500,
+            'message': 'Internal Server Error'
+        }), 500
+
+    @app.errorhandler(405)
+    def method_not_allowed(error):
+        return jsonify({
+            'success': False,
+            'error': 405,
+            'message': 'Method Not Allowed'
+        }), 405
+
     @app.errorhandler(AuthError)
     def not_auth_error(e):
         error = getattr(e, 'error', None)
