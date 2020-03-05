@@ -37,7 +37,7 @@ def actor_routes(app):
     """
 
     @app.route('/actors', methods=['POST'])
-    @requires_auth('add:actor')
+    # @requires_auth('add:actor')
     def create_actor(payload):
         body = request.get_json()
         new_name = body.get('name', None)

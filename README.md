@@ -1,5 +1,35 @@
 # Casting-Agent-API
 
+This project is a backend API developed using Flask. At the moment, this API contians 2 models, Movie and Actor, and it consists of 4 movie, 4 actor API end points. An authenticated user is able to view, add, update, delete a movie or actor. Anyone can extend this project by add more models in models.py or add more API end points in routes folder.
+
+Table of contents
+=================
+- [Casting-Agent-API](#casting-agent-api)
+- [Table of contents](#table-of-contents)
+  - [Getting Started](#getting-started)
+    - [Installing Dependencies](#installing-dependencies)
+      - [Python 3.7](#python-37)
+      - [Virtual Enviornment](#virtual-enviornment)
+      - [PIP Dependencies](#pip-dependencies)
+  - [Database Setup](#database-setup)
+  - [Running the server](#running-the-server)
+  - [API Reference](#api-reference)
+    - [Getting Started](#getting-started-1)
+    - [Error Handling](#error-handling)
+    - [Authorization](#authorization)
+    - [Endpoints](#endpoints)
+      - [GET /movies](#get-movies)
+      - [GET /movies/<id>](#get-moviesid)
+      - [POST /movies](#post-movies)
+      - [DELETE /movies/<id>](#delete-moviesid)
+      - [UPDATE /movies/<id>](#update-moviesid)
+      - [GET /actors](#get-actors)
+      - [GET /actors/<id>](#get-actorsid)
+      - [POST /actors](#post-actors)
+      - [DELETE /actors/<id>](#delete-actorsid)
+      - [UPDATE /actors/<id>](#update-actorsid)
+  - [Testing](#testing)
+
 ## Getting Started
 
 ### Installing Dependencies
@@ -22,7 +52,7 @@ pip install -r requirements.txt
 
 This will install all of the required packages we selected within the `requirements.txt` file.
 
-##### Key Dependencies
+Key Dependencies
 
 - [Flask](http://flask.pocoo.org/)  is a lightweight backend microservices framework. Flask is required to handle requests and responses.
 
@@ -83,7 +113,7 @@ The API will return five error types when requests fail:
 RBAC(Role-based access control) are enabled by default. There are three roles:
 * Casting Assistant
   * View actors (get:actors)
-  * View Movies (get:movies)
+  * View movies (get:movies)
 * Casting Director
   * All permissions a Casting Assistant has had
   * Add actor (add:actor)
@@ -97,260 +127,267 @@ RBAC(Role-based access control) are enabled by default. There are three roles:
 
 ### Endpoints
 
-#### GET /api/categories
+#### GET /movies
 * General
-  * Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
-  * Request Arguments: None
-  * Returns: JSON with a single key, categories, that contains a object of id: category_string key:value pairs. 
+  * Fetches a list of movies
+  * Request Arguments: JWT Authorization token that has permission 'view:movies'
+  * Returns: JSON with a list of serialized movie object
 * Sample request:
-  `curl http://localhost:5000/api/categories`
+  `curl -H "Authorization: Bearer <JWT Token>" http://localhost:5000/movies`
 * Sample return:
     ```json
     {
-    "categories": {
-        "1": "Science", 
-        "2": "Art", 
-        "3": "Geography", 
-        "4": "History", 
-        "5": "Entertainment", 
-        "6": "Sports"
-    }, 
+    "movies": [
+        {
+            "id":1,
+            "title":"2012"
+        },{
+            "id": 2,
+            "title": "Random Movie"
+        }
+    ], 
     "success": true
     }
     ```
 
-#### GET /api/questions
+#### GET /movies/<id>
 * General
-  * Fetches the questions to display on the main page
-  * Request Qrguments: None
-  * Returns: JSON consists of a list of questions, a dicionary of category object, success value, current category, total number of questions
+  * Fetches a specific movie based on id
+  * Request Qrguments: JWT Authorization token that has permission 'view:movie'
+  * Returns: JSON consists of a serialized movie object
 * Sample request:
-  `curl http://localhost:5000/api/questions`
+  `curl -H "Authorization: Bearer <JWT Token>" http://localhost:5000/movies/<id>`
 * Sample return:
     ```json
     {
-        "categories": {
-            "1": "Science", 
-            "2": "Art", 
-            "3": "Geography", 
-            "4": "History", 
-            "5": "Entertainment", 
-            "6": "Sports"
-        }, 
-        "current_category": "History", 
-        "questions": [
-            {
-            "answer": "Tom Cruise", 
-            "category": 5, 
-            "difficulty": 4, 
-            "id": 4, 
-            "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
-            }, 
-            {
-            "answer": "Maya Angelou", 
-            "category": 4, 
-            "difficulty": 2, 
-            "id": 5, 
-            "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
-            }, 
-            ...
-        ], 
-        "success": true, 
-        "total_questions": 29
+        "success": true,
+        "movies": {
+            "id":1,
+            "title":"Sally",
+            "release_date":"Fri, 21 Feb 2020 00:00:00 GMT",
+            "actors":[{
+                "id":1,
+                "name":"Tom Hanks",
+                "gender":"Male",
+                "age":65,
+                "movie_id":1
+            }]
+        }
+        
     }
     ```
 
-#### POST /api/questions
+#### POST /movies
 * General
-  * Create a new question
+  * Create a new movie
   * Request Arguments: JSON
-    * question - String, stating the content of question
-    * answer - String, answer to the question
-    * category - String, which category does this question belong to
-    * difficulty - Integer, the difficult level of this question ranging from 1-5
-  * Returns: JSON with a single key, categories, that contains a object of id: category_string key:value pairs. 
+    * title - String, the title of the new movie
+    * release_date - Date, the release date of the new movie
+    * JWT Authorization token that has permission 'add:movie'
+  * Returns: JSON with a list of serialized movie object
 * Sample request
   ```bash
-  curl -X POST -H "Content-Type: application/json" -d '{"question":"q","answer":"a","category":"1","difficulty":1}' http://localhost:5000/api/questions
+  curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer <JWT Token>" -d '{"title":"Sally","release_date":"01/01/2016"}' http://localhost:5000/movies
   ```
 * Sample return
     ```json
     {
-        "created": 35, 
-        "questions": [
-            {
-            "answer": "Tom Cruise", 
-            "category": 5, 
-            "difficulty": 4, 
-            "id": 4, 
-            "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
-            }, 
-            {
-            "answer": "Maya Angelou", 
-            "category": 4, 
-            "difficulty": 2, 
-            "id": 5, 
-            "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
-            }, 
-            ...
-        ], 
+        "movies": [
+        {
+            "id":1,
+            "title":"2012"
+        },{
+            "id": 2,
+            "title": "Random Movie"
+        }
+    ], 
+        "total_movies":1,
         "success": true, 
-        "total_questions": 30
     }
     ```
-#### DELETE /api/questions/<question_id>
+#### DELETE /movies/<id>
 * General
-  * Delete a specific question
-  * Request Arguments: question id
-  * Returns: JSON with success value, deleted question id, a list of questions, the number of total questions
+  * Delete a specific movie
+  * Request Arguments: movie id, JWT Authorization token that has permission 'delete:movie'
+  * Returns: JSON with success value, deleted movie id, a list of serialized movie object
 * Sample request
-  `CURL -X DELETE http://localhost:5000/questions/34`
+  `CURL -X DELETE  -H "Authorization: Bearer <JWT Token>" http://localhost:5000/movies/2`
 * Sample return
     ```json
     {
-        "deleted": "34", 
-        "questions": [
-            {
-            "answer": "Tom Cruise", 
-            "category": 5, 
-            "difficulty": 4, 
-            "id": 4, 
-            "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
-            }, 
-            {
-            "answer": "Maya Angelou", 
-            "category": 4, 
-            "difficulty": 2, 
-            "id": 5, 
-            "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
-            }, 
-            ... 
-        ], 
+        "deleted": "2", 
+        "movies": [
+        {
+            "id":1,
+            "title":"2012"
+        },{
+            "id": 2,
+            "title": "Random Movie"
+        }
+    ], 
         "success": true, 
-        "total_questions": 28
     }
 
     ```
-#### POST /api/search
+
+#### UPDATE /movies/<id>
 * General
-  * Search related questions based on a keyword
-  * Request Arguments: JSON
-    * searchTerm: String, the search term a user wants to use
-  * Returns: JSON consists of success value, related questions, total of search results, current category
+  * Update a specific movie
+  * Request Arguments: movie id, Authorization Header contains JWT token that has 'modify:movie' permission, JSON format of movie attritube that needs to be updated
+  * Returns: JSON with success value, updated movie id, a list of serialized movie object
 * Sample request
   ```bash
-  curl -X POST -H "Content-Type: application/json" -d '{"searchTerm":"What"}' http://localhost:5000/api/search
+  curl -X PATCH -H "Content-Type: application/json" -H "Authorization: Bearer <JWT Token>" -d '{"title":"Sally 2","release_date":"01/01/2021"}' http://localhost:5000/movies/2
   ```
 * Sample return
     ```json
     {
-        "current_category": "History", 
-        "questions": [
-            {
-            "answer": "Tom Cruise", 
-            "category": 5, 
-            "difficulty": 4, 
-            "id": 4, 
-            "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
-            }, 
-            {
-            "answer": "Edward Scissorhands", 
-            "category": 5, 
-            "difficulty": 3, 
-            "id": 6, 
-            "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
-            }, 
-            {
-            "answer": "Muhammad Ali", 
-            "category": 4, 
-            "difficulty": 1, 
-            "id": 9, 
-            "question": "What boxer's original name is Cassius Clay?"
-            }, 
-            {
-            "answer": "Lake Victoria", 
-            "category": 3, 
-            "difficulty": 2, 
-            "id": 13, 
-            "question": "What is the largest lake in Africa?"
-            }, 
-            {
-            "answer": "The Liver", 
-            "category": 1, 
-            "difficulty": 4, 
-            "id": 20, 
-            "question": "What is the heaviest organ in the human body?"
-            }
-        ], 
+        "updated": "2", 
+        "movies": [
+        {
+            "id":1,
+            "title":"2012"
+        },{
+            "id": 2,
+            "title": "Random Movie"
+        }
+    ], 
         "success": true, 
-        "total_questions": 5
     }
 
     ```
 
-#### GET /api/categories/<id>/questions
+#### GET /actors
 * General
-  * Fetches the questions based on category
-  * Request Qrguments: None
-  * Returns a JSON consists of a list of questions, a dicionary of category object, success value, current category, total number of questions
+  * Fetches a list of actors
+  * Request Arguments: JWT Authorization token that has permission 'view:actors'
+  * Returns: JSON with a list of serialized actor object
 * Sample request:
-  `curl http://localhost:5000/api/categories/5/questions`
+  `curl -H "Authorization: Bearer <JWT Token>" http://localhost:5000/actors`
 * Sample return:
     ```json
     {
-        "current_category": "Entertainment", 
-        "questions": [
-            {
-            "answer": "Tom Cruise", 
-            "category": 5, 
-            "difficulty": 4, 
-            "id": 4, 
-            "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
-            }, 
-            {
-            "answer": "Edward Scissorhands", 
-            "category": 5, 
-            "difficulty": 3, 
-            "id": 6, 
-            "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
-            }
-        ], 
-        "success": true, 
-        "total_questions": 2
+    "actors": [
+        {
+            "id":1,
+            "name":"Tom Hanks",
+            "age":57,
+            "gender":"Male",
+            "movie_id":1
+        }
+    ], 
+    "success": true
     }
     ```
 
-#### POST /api/quizzes
+#### GET /actors/<id>
 * General
-  * Get one question based on category and previous answerd question
+  * Fetches a specific actor based on id
+  * Request Qrguments: actor id, JWT Authorization token that has permission 'view:actor'
+  * Returns: JSON consists of a serialized actor object
+* Sample request:
+  `curl -H "Authorization: Bearer <JWT Token>" http://localhost:5000/actors/<id>`
+* Sample return:
+    ```json
+   {
+    "actor": {
+        "age": 65,
+        "gender": "Male",
+        "id": 1,
+        "movie_id": 1,
+        "name": "new_test_name"
+    },
+    "success": true
+}
+    ```
+
+#### POST /actors
+* General
+  * Create a new actor
   * Request Arguments: JSON
-    * previous_questions: String, the previous questions appeared before current question
-    * quiz_category: String, the category of the question
-  * Returns: JSON consists of success value, one random choosen question
+    * title - String, the title of the new actor
+    * release_date - Date, the release date of the new actor
+    * JWT Authorization token that has permission 'add:actor'
+  * Returns: JSON with a list of serialized actor object
 * Sample request
   ```bash
-  curl -X POST -H "Content-Type: application/json" -d '{"previous_questions":[],"quiz_category":{"type":"Science","id":"1"}' http://localhost:5000/api/quizzes
+  curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer <JWT Token>" -d '{"name":"Tom Hankds", "age":57, "gender":"Male","movie_id":1}' http://localhost:5000/actors
   ```
 * Sample return
     ```json
     {
-        "question": {
-            "answer": "easy answer", 
-            "category": 1, 
-            "difficulty": 1, 
-            "id": 28, 
-            "question": "Test Question"
-        }, 
-        "success": true
+    "actors": [
+        {
+            "id":1,
+            "name":"Tom Hanks",
+            "age":57,
+            "gender":"Male",
+            "movie_id":1
+        }
+    ], 
+    "total_actors":1,
+    "success": true
     }
     ```
+#### DELETE /actors/<id>
+* General
+  * Delete a specific actor
+  * Request Arguments: actor id, JWT Authorization token that has permission 'delete:actor'
+  * Returns: JSON with success value, deleted actor id, a list of serialized actor object
+* Sample request
+  `CURL -X DELETE  -H "Authorization: Bearer <JWT Token>" http://localhost:5000/actors/2`
+* Sample return
+    ```json
+    {
+        "deleted": "2", 
+        "actors": [
+        {
+            "id":1,
+            "name":"Tom Hanks",
+            "age":57,
+            "gender":"Male",
+            "movie_id":1
+        }
+    ], 
+        "success": true, 
+    }
+
+    ```
+
+#### UPDATE /actors/<id>
+* General
+  * Update a specific actor
+  * Request Arguments: actor id, Authorization Header contains JWT token that has 'modify:actor' permission, JSON format of actor attritube that needs to be updated
+  * Returns: JSON with success value, updated actor id, a list of serialized actor object
+* Sample request
+  ```bash
+  curl -X PATCH -H "Content-Type: application/json" -H "Authorization: Bearer <JWT Token>" -d '{"name":"Tom Holland","release_date":"01/01/2021"}' http://localhost:5000/actors/1
+  ```
+* Sample return
+    ```json
+    {
+        "updated": "2", 
+        "actors": [
+        {
+            "id":1,
+            "name":"Tom Holland",
+            "age":57,
+            "gender":"Male",
+            "movie_id":1
+        }
+    ], 
+        "success": true, 
+    }
+
+    ```
+
+
 
 
 ## Testing
 To run the tests, run
 ```
-dropdb trivia_test
-createdb trivia_test
-psql trivia_test < trivia.psql
-python test_flaskr.py
+dropdb cast_test
+createdb cast_test
+python test_app.py
 ```
