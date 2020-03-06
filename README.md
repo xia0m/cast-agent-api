@@ -2,6 +2,8 @@
 
 This project is a backend API developed using Flask. At the moment, this API contians 2 models, Movie and Actor, and it consists of 4 movie, 4 actor API end points. An authenticated user is able to view, add, update, delete a movie or actor. Anyone can extend this project by add more models in models.py or add more API end points in routes folder.
 
+The live demo is avaliable at [Heroku](https://cast-agent-api.herokuapp.com/)
+
 Table of contents
 =================
 - [Casting-Agent-API](#casting-agent-api)
@@ -29,6 +31,8 @@ Table of contents
       - [DELETE /actors/<id>](#delete-actorsid)
       - [UPDATE /actors/<id>](#update-actorsid)
   - [Testing](#testing)
+  - [Deployment](#deployment)
+    - [Create your own JWT token](#create-your-own-jwt-token)
 
 ## Getting Started
 
@@ -87,6 +91,7 @@ Setting the `FLASK_APP` variable to `app.py` directs flask to use the `app.py` f
 
 ### Getting Started
 * Base URL: If you want to run your app locally, the app is hosted at the default, `http://localhost:5000`.
+* Live URL: https://cast-agent-api.herokuapp.com/
 * Authentication: This version of the application is using [Auth0](https://auth0.com/) as authentication method.
 
 ### Error Handling
@@ -391,3 +396,19 @@ dropdb cast_test
 createdb cast_test
 python test_app.py
 ```
+
+## Deployment
+This app is currently hosted live on [Heroku](https://cast-agent-api.herokuapp.com/). To test the API end points, it is best to use Postman or curl. The authentication token is provided in test_token.py. In postman, under Authorization tab, change the TYPE to 'Bearer Token', and paste the proivded token to Token, then you can send different request.
+
+### Create your own JWT token
+```
+Assistant Email: assistant@test.com
+password: Test123456
+Director Email: director@test.com
+password: Test12345
+Producer Email: producer@test.com
+password: Test12345
+
+```
+In case that the provided JWT token is expired, navigate to [Login URL](https://fsnd-auth.auth0.com/authorize?audience=cast-api&response_type=token&client_id=4P1aExVFOpMCb8eAmxfJ6juhDt8a5dcZ&redirect_uri=http://localhost:8081/login-results). 
+Sign in using the Email and password above. Once you logged in, copy the token after access_token= and before &expires
